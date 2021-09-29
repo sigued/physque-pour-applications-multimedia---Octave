@@ -22,7 +22,7 @@
 ## Author: Sid Ali <Sid Ali@LAPTOP-4S8G29MM>
 ## Created: 2021-09-28
 
-function retval = cdmCone (rayon,hauteur)
+function retval = cdmCone (rayon, hauteur)
   
   retval = [0,0,hauteur/4];
 

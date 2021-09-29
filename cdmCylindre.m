@@ -22,8 +22,8 @@
 ## Author: Sid Ali <Sid Ali@LAPTOP-4S8G29MM>
 ## Created: 2021-09-28
 
-function [retval] = cdmCylindre (rayon,hauteur)
+function [retval] = cdmCylindre (rayon, hauteur)
   
-  retval = [0,0,hauteur/2];
+  retval = [0, 0, hauteur/2];
 
 endfunction
