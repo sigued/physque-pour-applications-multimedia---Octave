@@ -14,7 +14,7 @@ function pcdm = init (hauteurCyl, hauteurCone, rayonCone, rayonCylindre, epaisse
   objets = [cylindre; cone; cdmA1; cdmA2; cdmA3; cdmA4];
   masseObjets = [masseCylindre; masseCone; masseAil; masseAil; masseAil; masseAil];
   
+  %position du centre de masse du missile total
   pcdm = cdm(objets, masseObjets);
   
- 
 endfunction
