@@ -66,14 +66,23 @@ function [pcm I alpha] = Devoir1 (pos,AngRot,vangulaire,force)
   Ig_plaque4 = inertieComposee (I_plaque4, pcdm_plaque4, pcm, masse_p);
   
   % calcul de l' inertie apres rotation selon l'axe OX
-  Ig = [Ig_cylindre; Ig_cone; Ig_plaque1; Ig_plaque2; Ig_plaque3; Ig_plaque4];
+  M =  mRotation(AngRot);
+  Ig_cylindre_Rot = M*Ig_cylindre*M';
+  Ig_cone_Rot = M*Ig_cone*M';
+  Ig_plaque1_Rot = M*Ig_plaque1*M';
+  Ig_plaque2_Rot = M*Ig_plaque2*M';
+  Ig_plaque3_Rot = M*Ig_plaque3*M';
+  Ig_plaque4_Rot = M*Ig_plaque4*M';
+  
+  Ig = Ig_cylindre_Rot + Ig_cone_Rot + Ig_plaque1_Rot + Ig_plaque2_Rot + Ig_plaque3_Rot +Ig_plaque4_Rot;
   
   %#########################################################
   %                                                        % 
-  I = appliquerRotation(Ig, AngRot);                      %
+  I = Ig;                      %
   %                                                        %
   %#########################################################
   
-  alpha = 0;
+  alpha = calculerAcceleration ([pcm(1); pcm(2); pcm(3)], AngRot, force, Ig, vangulaire);
+  %alpha =0;
 
 endfunction

@@ -7,5 +7,5 @@ function inertie = appliquerRotation (composantsMissile, angle)
     inertieTotaleApresTranslation = inertieTotaleApresTranslation + composantsMissile(i);    
   endfor
   
-  inertie = M*inertieTotaleApresTranslation*transpose(M);
+  inertie = M*inertieTotaleApresTranslation*M';
 endfunction
