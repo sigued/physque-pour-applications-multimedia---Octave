@@ -1,7 +1,7 @@
 function inertie = inertieCone (rayon, hauteur, masseVolumique)
   
   % volume = (pi*h^2)*3
-  volume = (3.14*(hauteur^2))*3;
+  volume = (3.14*(rayon^2)*hauteur)*3;
   %masse = masseVolumique*volume
   masse = masseVolumique*volume;
   

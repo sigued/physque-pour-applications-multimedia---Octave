@@ -36,8 +36,8 @@ function [pcm I alpha] = Devoir1 (pos,AngRot,vangulaire,force)
 
   % calcul du centre de masse de chaque composant du missile (donnee utile pour le calcul
   % de l'inertie par rapport aux coordonnees du systeme global
-  pcdm_cylindre = cdmCylindre (r_cyl, h_cyl); 
-  pcdm_cone = cdmCone (r_cone, h_cone);
+  pcdm_cylindre = cdmCylindre (h_cyl); 
+  pcdm_cone = cdmCone (h_cone, h_cyl);
   [pcdm_plaque1 pcdm_plaque2 pcdm_plaque3 pcdm_plaque4] = cdmAil (e_p, h_p, l_p, r_cyl);
   
 
@@ -49,14 +49,15 @@ function [pcm I alpha] = Devoir1 (pos,AngRot,vangulaire,force)
   %                                                        %
   %#########################################################
   
+  %inertieAile (epaisseur, largeur, hauteur, masse)
   
   % calcul de l'inertie de chaque composant du missile
   I_cylindre = inertieCylindre (r_cyl, h_cyl, mv_cyl);
   I_cone = inertieCone (r_cone, h_cone, mv_cone);
   I_plaque1 = inertieAile (e_p, l_p, h_p, masse_p);
-  I_plaque2 = inertieAile (e_p, l_p, h_p, masse_p);
+  I_plaque2 = inertieAile (l_p, e_p, h_p, masse_p);
   I_plaque3 = inertieAile (e_p, l_p, h_p, masse_p);
-  I_plaque4 = inertieAile (e_p, l_p, h_p, masse_p);
+  I_plaque4 = inertieAile (l_p, e_p, h_p, masse_p);
   
   #{
   % calcul de l'inertie de chaque composant du missile
