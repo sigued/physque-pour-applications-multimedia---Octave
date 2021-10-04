@@ -15,3 +15,13 @@ fprintf('  Moment inertie  =\n   %14.0f & %14.0f & %14.0f \\\\ \n   %14.0f & %14
 fprintf('  acc angulaire   = ( %10.5f  %10.5f  %10.5f )\n',alphaCas1(1),alphaCas1(2),alphaCas1(3));
 %
 % Cas 2
+AngRotCas2=0.5;
+vangulaireCas2=[0.05;0;0.001];
+forceCas2=[5e6;0.1;1.4];
+posCas2=[0;-20.0;300];
+[pcmCas2 ICas2 alphaCas2]=Devoir1(posCas2,AngRotCas2,vangulaireCas2,forceCas2);
+fprintf('\nResultats missile incline\n');
+fprintf('  Centre de masse = ( %10.5f  %10.5f  %10.5f )\n',pcmCas2(1),pcmCas2(2),pcmCas2(3));
+fprintf('  Moment inertie  =\n   %14.0f   %14.0f  %14.0f \\\\ \n   %14.0f   %14.0f   %14.0f \\\\ \n   %14.0f   %14.0f   %14.0f \\\\ \n',...
+     ICas2(1,1),ICas2(1,2),ICas2(1,3),ICas2(2,1),ICas2(2,2),ICas2(2,3),ICas2(3,1),ICas2(3,2),ICas2(3,3));
+fprintf('  acc angulaire   = ( %10.5f  %10.5f  %10.5f )\n',alphaCas2(1),alphaCas2(2),alphaCas2(3));
