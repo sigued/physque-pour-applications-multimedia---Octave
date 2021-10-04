@@ -4,8 +4,8 @@ function pcdm = init (hauteurCyl, hauteurCone, rayonCone, rayonCylindre, epaisse
   mv = 4000;
   masseAil = 2000;
    
-  cylindre = cdmCylindre(rayonCylindre, hauteurCyl);
-  cone = cdmCone(rayonCone, hauteurCone);
+  cylindre = cdmCylindre(hauteurCyl);
+  cone = cdmCone(hauteurCone);
   [cdmA1 cdmA2 cdmA3 cdmA4] = cdmAil(epaisseurAil, hauteurAil, largeurAil, rayonCylindre);
   
   masseCone =  mv*((3.14*(rayonCone^2)*hauteurCone)/3);

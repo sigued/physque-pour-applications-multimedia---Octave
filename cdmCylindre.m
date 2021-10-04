@@ -1,4 +1,4 @@
-function [retval] = cdmCylindre (rayon, hauteur)
+function [retval] = cdmCylindre (hauteur)
   
   retval = [0, 0, hauteur/2];
 

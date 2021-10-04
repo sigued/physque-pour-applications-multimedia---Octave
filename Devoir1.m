@@ -27,8 +27,8 @@ function [pcm I alpha] = Devoir1 (pos,AngRot,vangulaire,force)
   
   % calcul de la masse du cone
   
-  % volume = (pi*h^2)*3
-  volume_cone = (3.14*(h_cone^2))*3;
+  % volume = (pi*h*r^2)/3
+  volume_cone = (3.14*(r_cone^2)*h_cone)/3;
   %masse = masseVolumique*volume
   masse_cone = mv_cone*volume_cone;
   
@@ -39,6 +39,7 @@ function [pcm I alpha] = Devoir1 (pos,AngRot,vangulaire,force)
   pcdm_cylindre = cdmCylindre (r_cyl, h_cyl); 
   pcdm_cone = cdmCone (r_cone, h_cone);
   [pcdm_plaque1 pcdm_plaque2 pcdm_plaque3 pcdm_plaque4] = cdmAil (e_p, h_p, l_p, r_cyl);
+  
 
   
   % calcul pour la position du centre de masse global
@@ -56,6 +57,17 @@ function [pcm I alpha] = Devoir1 (pos,AngRot,vangulaire,force)
   I_plaque2 = inertieAile (e_p, l_p, h_p, masse_p);
   I_plaque3 = inertieAile (e_p, l_p, h_p, masse_p);
   I_plaque4 = inertieAile (e_p, l_p, h_p, masse_p);
+  
+  #{
+  % calcul de l'inertie de chaque composant du missile
+  M =  mRotation(AngRot);
+  I_cylindre = M*I_cylindre*M';
+  I_cone = M*I_cone*M';
+  I_plaque1 = M*I_plaque1*M';
+  I_plaque2 = M*I_plaque2*M';
+  I_plaque3 = M*I_plaque3*M';
+  I_plaque4 = M*I_plaque4*M';
+  #}
   
   % translation de l'inertie par rapport au cdm glogal Ig_composant (inertie dans coord globale du composant x)
   Ig_cylindre = inertieComposee(I_cylindre, pcdm_cylindre, pcm, masse_cyl);
@@ -83,6 +95,5 @@ function [pcm I alpha] = Devoir1 (pos,AngRot,vangulaire,force)
   %#########################################################
   
   alpha = calculerAcceleration ([pcm(1); pcm(2); pcm(3)], AngRot, force, Ig, vangulaire);
-  %alpha =0;
 
 endfunction
