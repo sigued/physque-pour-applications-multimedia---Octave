@@ -1,8 +1,9 @@
-function inertie = inertieComposee (inertieComposant, pcdmComposant, pcdmGlobal, masse)
+function inertie = inertieComposee (inertieComposant, pcdmComposant, pcdmGlobal, masse, pos)
   %dc = [ dc,x , dc,y , dc,z ] = pcdmComposant - pcdmGlobal
-  dcx = (pcdmComposant(1) - pcdmGlobal(1));
-  dcy = (pcdmComposant(2) - pcdmGlobal(2));
-  dcz = (pcdmComposant(3) - pcdmGlobal(3));
+  
+  dcx = (pcdmComposant(1) + pos(1) - pcdmGlobal(1));
+  dcy = (pcdmComposant(2) + pos(2) - pcdmGlobal(2));
+  dcz = (pcdmComposant(3) + pos(3) - pcdmGlobal(3));
  
   % initialisation de la matrice de translation (mTranslation)
   mTranslation = zeros(3,3);

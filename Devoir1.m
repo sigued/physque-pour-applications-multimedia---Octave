@@ -45,7 +45,7 @@ function [pcm I alpha] = Devoir1 (pos,AngRot,vangulaire,force)
   % calcul pour la position du centre de masse global
   %#########################################################
   %                                                        % 
-  pcm = init(h_cyl, h_cone, r_cone, r_cyl, e_p, h_p, l_p); %
+  pcm = init(h_cyl, h_cone, r_cone, r_cyl, e_p, h_p, l_p, AngRot) + pos; %
   %                                                        %
   %#########################################################
   
@@ -71,12 +71,12 @@ function [pcm I alpha] = Devoir1 (pos,AngRot,vangulaire,force)
   #}
   
   % translation de l'inertie par rapport au cdm glogal Ig_composant (inertie dans coord globale du composant x)
-  Ig_cylindre = inertieComposee(I_cylindre, pcdm_cylindre, pcm, masse_cyl);
-  Ig_cone = inertieComposee (I_cone, pcdm_cone, pcm, masse_cone);
-  Ig_plaque1 = inertieComposee (I_plaque1, pcdm_plaque1, pcm, masse_p);
-  Ig_plaque2 = inertieComposee (I_plaque2, pcdm_plaque2, pcm, masse_p);
-  Ig_plaque3 = inertieComposee (I_plaque3, pcdm_plaque3, pcm, masse_p);
-  Ig_plaque4 = inertieComposee (I_plaque4, pcdm_plaque4, pcm, masse_p);
+  Ig_cylindre = inertieComposee(I_cylindre, pcdm_cylindre, pcm, masse_cyl, pos);
+  Ig_cone = inertieComposee (I_cone, pcdm_cone, pcm, masse_cone, pos);
+  Ig_plaque1 = inertieComposee (I_plaque1, pcdm_plaque1, pcm, masse_p, pos);
+  Ig_plaque2 = inertieComposee (I_plaque2, pcdm_plaque2, pcm, masse_p, pos);
+  Ig_plaque3 = inertieComposee (I_plaque3, pcdm_plaque3, pcm, masse_p, pos);
+  Ig_plaque4 = inertieComposee (I_plaque4, pcdm_plaque4, pcm, masse_p, pos);
   
   % calcul de l' inertie apres rotation selon l'axe OX
   M =  mRotation(AngRot);
@@ -95,6 +95,6 @@ function [pcm I alpha] = Devoir1 (pos,AngRot,vangulaire,force)
   %                                                        %
   %#########################################################
   
-  alpha = calculerAcceleration ([pcm(1); pcm(2); pcm(3)], AngRot, force, Ig, vangulaire);
+  alpha = calculerAcceleration ([pcm(1); pcm(2); pcm(3)], AngRot, force, Ig, vangulaire, pos);
 
 endfunction

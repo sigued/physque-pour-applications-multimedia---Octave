@@ -1,6 +1,6 @@
 
 
-function pcdm = init (hauteurCyl, hauteurCone, rayonCone, rayonCylindre, epaisseurAil, hauteurAil, largeurAil)
+function pcdm = init (hauteurCyl, hauteurCone, rayonCone, rayonCylindre, epaisseurAil, hauteurAil, largeurAil, angle)
   mv = 4000;
   masseAil = 2000;
    
@@ -15,6 +15,8 @@ function pcdm = init (hauteurCyl, hauteurCone, rayonCone, rayonCylindre, epaisse
   masseObjets = [masseCylindre; masseCone; masseAil; masseAil; masseAil; masseAil];
   
   %position du centre de masse du missile total
-  pcdm = cdm(objets, masseObjets);
+  pcdmT = cdm(objets, masseObjets);
+  M = mRotation (angle);
+  pcdm = M*[pcdmT(1);pcdmT(2);pcdmT(3)];
   
 endfunction
