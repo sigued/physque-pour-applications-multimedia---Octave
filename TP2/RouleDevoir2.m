@@ -20,7 +20,7 @@ wbi([1:3],2)=[0;-5;-6.3];
 xy0([1:2],3)=[0.2;89.8];
 vbi([1:3],3)=[5.3;-21;16.5];
 wbi([1:3],3)=[0;0;-6.3];
-%Tir 4 Valeurs de vbi et wbi à déterminer par les étudiants
+%Tir 4 Valeurs de vbi et wbi ï¿½ dï¿½terminer par les ï¿½tudiants
 xy0([1:2],4)=[0;1];
 vbi([1:3],4)=[10;10;10];
 wbi([1:3],4)=[0;0;0];
@@ -42,6 +42,7 @@ for vit=1:4
   line(Butsgx,Butsy,Butsz,'color','b');
   line(Butsdx,Butsy,Butsz,'color','b');
   plot3(xy0(1,vit),xy0(2,vit),0.11,'r+');
+  
   [But vbf tt xx yy zz]=Devoir2(xy0(:,vit),vbi(:,vit),wbi(:,vit));
   sz=size(tt,2);
   plot3(xx(1:sz),yy(1:sz),zz(1:sz),'b')
@@ -54,6 +55,7 @@ for vit=1:4
   elseif But == 3
     fprintf('Le ballon touche les montants du but en premier\n');
   end
+ 
   fprintf('Temps de la collision          %10.6f s \n',tt(sz));
   fprintf('Position finale de la balle    (%8.4f,%8.4f,%8.4f)  m \n',xx(sz),yy(sz),zz(sz));
   fprintf('Vitesse finale de la balle     (%8.4f,%8.4f,%8.4f)  m/s\n',vbf(1),vbf(2),vbf(3));
