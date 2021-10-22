@@ -63,6 +63,7 @@ function [limite, coup] = verifier_limites (pos)
   endif  
   
   % traduction des limites
+  coup =0;
   
   if(ballon_au_but)
    coup = 0;
@@ -75,6 +76,5 @@ function [limite, coup] = verifier_limites (pos)
   endif  
   
   limite = ballon_au_sol || ballon_au_but || ballon_touche_montant_vertical || ballon_touche_montant_horz || ballon_hors_terrain_Y || ballon_hors_terrain_X;
-   
 
 endfunction

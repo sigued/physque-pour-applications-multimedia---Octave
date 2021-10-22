@@ -1,24 +1,14 @@
-function [Coup vbf t x y z]=Devoir2(xy0,Vb0,Wb0)
+function [But vbf tt xx yy zz]=Devoir2(xy0,Vb0,Wb0)
   
+  RAYON_BALLON= 0.11 ;%en m 
+  t_0 = 100;
+  delta_t = 1000/t_0;
   
-  % CONSTANTES POUR LE BALLON %
-    
-    MASSE_BALLON= 0.45; %en kg
-    RAYON_BALLON= 0.11 ;%en m 
-    AIR_BALLON = pi*RAYON_BALLON^2; % en m2
-    % CONSTANTES POUR LES BUTS %
-    LARGEUR_BUT = 7.32; %en m
-    HAUTEUR_BUT = 2.44; %en m
-    
-    % CONSTANTES POUR LES CALCULS DE FORCES %
-    
-    g =9.8; % en m/s^2
-    Z_FORCE_GRAVITATIONNELLE = -MASSE_BALLON*g; 
+  [r_0, r_i, v_0, vbf, tt, limite, But ] = trajectoire (xy0,Vb0,Wb0, RAYON_BALLON, delta_t, t_0);
   
-    MASSE_VOLUMIQUE_AIR = 1.2754;  % en kg/m^3
-    VISCOSITE_AIR= 1.8e-5; % en kgm-1s-1
+  xx = r_i(1);
+  yy = r_i(2);
+  zz = r_i(3);
   
-  %VITESSE ET VITESSE_ANGULAIRE DOIVENT ETRE DEFINI%
-  [FORCE_GRAVITATIONNELLE FORCE_FROTTEMENT_VISQUEUX FORCE_MAGNUS] = Calculs_Forces(MASSE_BALLON,RAYON_BALLON,AIR_BALLON,Z_FORCE_GRAVITATIONNELLE,MASSE_VOLUMIQUE_AIR,VISCOSITE_AIR,VITESSE,VITESSE_ANGULAIRE)
-  
-  
+endFunction
+
