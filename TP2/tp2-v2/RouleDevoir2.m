@@ -44,7 +44,7 @@ for vit=1:4
   plot3(xy0(1,vit),xy0(2,vit),0.11,'r+');
   [But vbf tt xx yy zz]=Devoir2(xy0(:,vit),vbi(:,vit),wbi(:,vit));
   sz=size(tt,2);
-  plot3(xx(1:sz),yy(1:sz),zz(1:sz),'b')
+  plot3(xx(1:end),yy(1:end),zz(1:end),'b')
   if But == 0
     fprintf('But ! \n');
   elseif But == 1
@@ -54,8 +54,8 @@ for vit=1:4
   elseif But == 3
     fprintf('Le ballon touche les montants du but en premier\n');
   end
-  fprintf('Temps de la collision          %10.6f s \n',tt(sz));
-  fprintf('Position finale de la balle    (%8.4f,%8.4f,%8.4f)  m \n',xx(sz),yy(sz),zz(sz));
+  fprintf('Temps de la collision          %10.6f s \n',tt(end));
+  fprintf('Position finale de la balle    (%8.4f,%8.4f,%8.4f)  m \n',xx(end),yy(end),zz(end));
   fprintf('Vitesse finale de la balle     (%8.4f,%8.4f,%8.4f)  m/s\n',vbf(1),vbf(2),vbf(3));
   fprintf('\n\n');
   hold;
