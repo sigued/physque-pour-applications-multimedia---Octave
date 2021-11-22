@@ -1,24 +1,29 @@
-function res = g (q0, t0)
+function res = g (q0)
   
   m=0.21;
   r=0.031;
+  u_c = 0.3;
     
-  vi = q(1:3);
-  ri = q(4:6);
-  wi = q(7:9);
-  ai = q(10:12);
-  aai = q(13:15);
+  vi = [q0(1); q0(2); q0(3)];
+  ri = [q0(4); q0(5); q0(6)];
+  wi = [q0(7); q0(8); q0(9)];
   
-  Fg = gravite(m);
-  Ff = fGlissement(vi);
-  F = Fg+Ff;
+  rp = [q0(4); q0(5); 0];
   
-  a = F/m;
-  aaf = aai;
-  vf = vi+a*t0;
-  rf = ri+vi*t0;
-  wf = wi+aai*t0;
+  vc = vi;
+  vr = cross(-wi, (rp-ri));
+
+  d = (vc-vr)/norm(vc-vr);
   
-  res = [rf-ri, vf-vi, wf-wi, a-ai, aaf-aai];
+  a = -1*(u_c*m*9.81*d)/m;
+  aa = -1*(5/(2*m*r.^2))*(u_c*m*9.81*cross((ri-rp), d));
+  
+  if norm(vc) == 0 && norm(vr) == 0
+    a= [0 0 0];
+    aa = [0 0 0];
+    
+  endif
+  
+  res = [aa(1), aa(2), aa(3), a(1), a(2), a(3), q0(1) q0(2) q0(3)];
 
 endfunction
