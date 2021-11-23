@@ -1,14 +1,15 @@
 function [coll tr tt xb yb xr yr xj yj]=Devoir3(xyb, xyr, xyj, Vb0)
  
+ 
   R = 3.1/100;
   epsilon_b2b = 0.9;
   epsilon_b2mur = 0.8;
   t0 = 100; 
   delta_t = 100/1000;
   
-  glisse_b = true;
-  glisse_r = false;
-  glisse_j = false;
+  roulement_b = false;
+  roulement_r = false;
+  roulement_j = false;
   
   b2r_collision = false;
   b2j_collision = false;
@@ -18,260 +19,280 @@ function [coll tr tt xb yb xr yr xj yj]=Devoir3(xyb, xyr, xyj, Vb0)
   mur2r_collision = false;
   mur2j_collision = false;
   b_mur_collision = false;
+  r_mur_collision = false;
+  j_mur_collision = false;
+  
+  collision_avec_rouge  =false;
+  collision_avec_jaune=false;
   
   coll = 0;
-  q0 = [0; 0; 0; Vb0(1); Vb0(2); 0; xyb(1); xyb(2); R];
+  q0 = [0 0 0 Vb0(1) Vb0(2) 0 xyb(1) xyb(2) R];
   xb = [q0(7)];
   yb = [q0(8)];
   
-  wi = [q0(1); q0(2); q0(3)];
-  vi = [q0(4); q0(5); q0(6)];
-  ri = [q0(7); q0(8); q0(9)];
-  
-  qr0 = [0; 0; 0; 0; 0; 0; xyr(1); xyr(2); R];
+  qr0 = [0 0 0 0 0 0 xyr(1) xyr(2) R];
   xr = [qr0(7)];
   yr = [qr0(8)];
   
-  qj0 = [0; 0; 0; 0; 0; 0; xyj(1); xyj(2); R];
+  qj0 = [0 0 0 0 0 0 xyj(1) xyj(2) R];
   xj = [qj0(7)];
   yj = [qj0(8)];
   
-  wi_r = [qr0(1); qr0(2); qr0(3)];
-  vi_r = [qr0(4); qr0(5); qr0(6)];
-  ri_r = [qr0(7); qr0(8); qr0(9)];
   
-  wi_j = [qj0(1); qj0(2); qj0(3)];
-  vi_j = [qj0(4); qj0(5); qj0(6)];
-  ri_j = [qj0(7); qj0(8); qj0(9)];
+  wb = [q0(1) q0(2) q0(3)];
+  vb = [q0(4) q0(5) q0(6)];
+  rb = [q0(7) q0(8) q0(9)];
+  
+  wr = [qr0(1) qr0(2) qr0(3)];
+  vr = [qr0(4) qr0(5) qr0(6)];
+  rr = [qr0(7) qr0(8) qr0(9)];
+  
+  wj = [qj0(1) qj0(2) qj0(3)];
+  vj = [qj0(4) qj0(5) qj0(6)];
+  rj = [qj0(7) qj0(8) qj0(9)];
   
   tt = [t0];
   g = 'g';
   
-  arret_balle_b = false;
-  v = [Vb0(1) Vb0(2) 0];
-  vitesses_balle_blanche = [v];
-  prev_glisse_b = true;
-  n=0;
+  
+  m=0;
   
   tr = [t0];
+  vbx = [vb(1)];
+  vby = [vb(2)];
  
+  fprintf("vi = [ %d %d %d]\n", q0(4),q0(5),q0(6));
+
   do
-    n = n+1;
-    fprintf("---------------------------------------------------------------\n");
-    fprintf("n = %d\n", n);
-    fprintf("vi = [ %d %d %d]\n", q0(4),q0(5),q0(6));
-    if glisse_b
-      fprintf("glisse_b\n");
-      qs = SEDRK4t0 (q0, delta_t);
-      %fprintf("qs \n");
-      %fprintf('%f\n', qs);
-      wi = [qs(1); qs(2); qs(3)];
-      vi = [qs(4); qs(5); qs(6)];
-      ri = [qs(7); qs(8); qs(9)];
-            
-      glisse_b = qs_glissement (q0, qs);
-      
-      q0 = [wi(1); wi(2); wi(3); vi(1); vi(2); vi(3); xb(end); yb(end); R];
-      xb(end+1,:) = next_pos(xb(end), vi(1), delta_t);
-      yb(end+1,:) = next_pos(yb(end), vi(2), delta_t);
-      %q0 = [wi(1); wi(2); wi(3); vi(1); vi(2); vi(3); xb(end); yb(end); R];
-      tt(end+1,:) = [t0];
-      t0 = t0 + delta_t;
-      vitesses_balle_blanche(end+1,:) = [vi(1) vi(2) vi(3)];
+    m = m+1;
     
-    else
-      fprintf("glisse_b faux  \n");
-      [qs,arret_balle_b] = qs_roulement (q0, delta_t, R);
-      q0 = qs;
-      q0(7) =xb(end);
-      q0(8) =yb(end);
-      q0(9) = R;
-      xb(end+1,:) = next_pos(xb(end), qs(4), delta_t);
-      yb(end+1,:) = next_pos(yb(end), qs(5), delta_t);
-      %q0(7) =xb(end);
-      %q0(8) =yb(end);
-      %q0(9) = R;
-      tt(end+1,:) = [t0];
-      t0 = t0 + delta_t;
-      vitesses_balle_blanche(end+1,:) = [vi(1) vi(2) vi(3)];
-
-    endif
+    %fprintf("n = %d\n", m);
+    %fprintf("vi = [ %d %d %d]\n", q0(4),q0(5),q0(6));
     
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%% BOULE ROUGE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    rb = [q0(7) q0(8) q0(9)];
+    rr = [qr0(7) qr0(8) qr0(9)];
+    rj = [qj0(7) qj0(8) qj0(9)];
     
-    if glisse_r
-      fprintf("glisse_r\n");
-      qs_r = SEDRK4t0 (qr0, delta_t);
-      wi_r = [qs_r(1); qs_r(2); qs_r(3)];
-      vi_r = [qs_r(4); qs_r(5); qs_r(6)];
-      ri_r = [qs_r(7); qs_r(8); qs_r(9)];
-            
-      glisse_r = qs_glissement (qr0, qs_r);
-      
-      qr0 = [wi_r(1); wi_r(2); wi_r(3); vi_r(1); vi_r(2); vi_r(3); xr(end); yr(end); R];
-      xr(end+1,:) = next_pos(xr(end), qs_r(4), delta_t);
-      yr(end+1,:) = next_pos(yr(end), qs_r(5), delta_t);
-      %qr0 = [wi_r(1); wi_r(2); wi_r(3); vi_r(1); vi_r(2); vi_r(3); xr(end); yr(end); R];
     
-    elseif (!glisse_r && b2r_collision)
-      fprintf("glisse_r faux \n");
-      [qs_r,arret_balle_r] = qs_roulement (qr0, delta_t, R);
-      qr0 = qs_r;
-      qr0(7) =xr(end);
-      qr0(8) =yr(end);
-      qr0(9) = R;
-      xr(end+1,:) = next_pos(xr(end), qs_r(4), delta_t);
-      yr(end+1,:) = next_pos(yr(end), qs_r(5), delta_t);
-      %qr0(7) =xr(end);
-      %qr0(8) =yr(end);
-      %qr0(9) = R;
-    endif
-    
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%% BOULE JAUNE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    if glisse_j
-      fprintf("glisse_j\n");
-      qs_j = SEDRK4t0 (qj0, delta_t);
-      wi_j = [qs_j(1); qs_j(2); qs_j(3)];
-      vi_j = [qs_j(4); qs_j(5); qs_j(6)];
-      ri_j = [qs_j(7); qs_j(8); qs_j(9)];
-            
-      glisse_j = qs_glissement (qj0, qs_j);
-      
-      qj0 = [wi_j(1); wi_j(2); wi_j(3); vi_j(1); vi_j(2); vi_j(3); xj(end); yj(end); R];
-      xj(end+1,:) = next_pos(xj(end), qs_j(4), delta_t);
-      yj(end+1,:) = next_pos(yj(end), qs_j(5), delta_t);
-      %qj0 = [wi_j(1); wi_j(2); wi_j(3); vi_j(1); vi_j(2); vi_j(3); xj(end); yj(end); R];
-    
-    elseif (!glisse_j && b2j_collision)
-      fprintf("glisse_j faux \n");
-      [qs_j,arret_balle_j] = qs_roulement (qj0, delta_t, R);
-      qj0 = qs_j;
-      qj0(7) =xj(end);
-      qj0(8) =yj(end);
-      qj0(9) = R;
-      xj(end+1,:) = next_pos(xj(end), qs_j(4), delta_t);
-      yj(end+1,:) = next_pos(yj(end), qs_j(5), delta_t);
-      %qj0(7) =xj(end);
-      %qj0(8) =yj(end);
-      %qj0(9) = R;
-
-    endif    
-    
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%  VERIFICATION COLLISIONS   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
-    fprintf("VERIFICATION COLLISIONS \n");
-    fprintf("ri = [ %d %d %d]\n", ri(1),ri(2),ri(3));
-    fprintf("ri_r = [ %d %d %d]\n", ri_r(1),ri_r(2),ri_r(3));
-    fprintf("ri_j = [ %d %d %d]\n", ri_j(1),ri_j(2),ri_j(3));
-    b2r_collision = verifier_b2b_collision(ri, ri_r, R, R);
-    b2j_collision = verifier_b2b_collision(ri, ri_j, R, R);
-    b_mur_collision = verifier_collision_mur (ri, R);
+    b2r_collision = verifier_b2b_collision(rb, rr, R, R);
+    b2j_collision = verifier_b2b_collision(rb, rj, R, R);
+    r2j_collision = verifier_b2b_collision(rr, rj, R, R);
+    [b_mur_collision, pos_mur_b] = verifier_collision_mur (rb, R);
+    [r_mur_collision, pos_mur_r] = verifier_collision_mur (rr, R);
+    [j_mur_collision, pos_mur_j] = verifier_collision_mur (rj, R);
     
     if b2r_collision
-      fprintf("b2r_collision\n");
+      %fprintf("b2r_collision\n");
       
-      n = calculer_normale(ri, ri_r);
-      p = ri + n*R;
-      [vbf vrf wbf wrf] = calculer_vitesse_apres_coll (ri, ri_r, p, n, vi, vi_r, wi, wi_r, epsilon_b2b);
-      
-      vi = [vbf(1); vbf(2); 0];
-      wi = [wbf(1); wbf(2); wbf(3)];
-      
-      xb(end+1,:) = next_pos(xb(end), vi(1), delta_t);
-      yb(end+1,:) = next_pos(yb(end), vi(2), delta_t);
-      ri = [xb(end); yb(end); R];
-      q0 = [wi(1); wi(2); wi(3); vi(1); vi(2); vi(3); ri(1); ri(2); ri(3)];
-      
-      vi_r = [vrf(1); vrf(2); 0];   
-      wi_r = [wrf(1); wrf(2); wrf(3)];
-1      
-      xr(end+1,:) = next_pos(xr(end), vi_r(1), delta_t);
-      yr(end+1,:) = next_pos(yr(end), vi_r(2), delta_t);
-      ri_r = [xr(end); yr(end); R];
-      qr0 = [wi_r(1); wi_r(2); wi_r(3); vi_r(1); vi_r(2); vi_r(3); ri_r(1); ri_r(2); ri_r(3)];
-      
-      tt(end+1,:) = [t0];
-      t0 = t0 + delta_t;
-      
-      if coll == 1;
-        coll = 2;
-      else
-        coll = 1;
-      endif 
-      vitesses_balle_blanche(end+1,:) = [vi(1) vi(2) vi(3)];
-    endif  
+      n = rb-rr/norm(rb-rr);
+      p = rb + n*R;
+      [vbf vrf wbf wrf] = calculer_vitesse_apres_coll (rb, rr, p, n, q0, qr0, epsilon_b2b, true);
+      roulement_r = false;
+      roulement_b = false;
+      collision_avec_rouge = true;
+      q0 = [wbf(1) wbf(2) wbf(3) vbf(1) vbf(2) vbf(3) rb(1) rb(2) rb(3)];
+      qr0 = [wrf(1) wrf(2) wrf(3) vrf(1) vrf(2) vrf(3) rr(1) rr(2) rr(3)];
+    endif
     
     if b2j_collision
-      fprintf("b2j_collision\n");
-      n = calculer_normale(ri, ri_j);
-      p = ri + n*R;
-      [vbf vjf wbf wjf] = calculer_vitesse_apres_coll (ri, ri_j, p, n, vi, vi_j, wi, wi_j, epsilon_b2b);
+      %fprintf("b2j_collision\n");
       
-      vi = [vbf(1); vbf(2); 0];
-      wi = [wbf(1); wbf(2); wbf(3)];
+      n = rb-rj/norm(rb-rj);
+      p = rb + n*R;
+      [vbf vjf wbf wjf] = calculer_vitesse_apres_coll (rb, rj, p, n, q0, qj0, epsilon_b2b, true);
+      roulement_j = false;
+      roulement_b = false;
+      collision_avec_jaune = true;
+      q0 = [wbf(1) wbf(2) wbf(3) vbf(1) vbf(2) vbf(3) rb(1) rb(2) rb(3)];
+      qj0 = [wjf(1) wjf(2) wjf(3) vjf(1) vjf(2) vjf(3) rj(1) rj(2) rj(3)];
+    endif
+    
+    if r2j_collision
+      %fprintf("r2j_collision\n");
       
-      xb(end+1,:) = next_pos(xb(end), vi(1), delta_t);
-      yb(end+1,:) = next_pos(yb(end), vi(2), delta_t);
-      ri = [xb(end); yb(end); R];
-      q0 = [wi(1); wi(2); wi(3); vi(1); vi(2); vi(3); ri(1); ri(2); ri(3)];
-      
-      vi_j = [vjf(1); vjf(2); 0];   
-      wi_j = [wjf(1); wjf(2); wjf(3)];
-1      
-      xj(end+1,:) = next_pos(xj(end), vi_j(1), delta_t);
-      yj(end+1,:) = next_pos(yj(end), vi_j(2), delta_t);
-      ri_j = [xj(end); yj(end); 0];
-      qr0 = [wi_j(1); wi_j(2); wi_j(3); vi_j(1); vi_j(2); vi_j(3); ri_j(1); ri_j(2); ri_j(3)];
-      
-      tt(end+1,:) = [t0];
-      t0 = t0 + delta_t;
-      
-      if coll == 1;
-        coll = 2;
-      else
-        coll = 1;
-      endif 
-      vitesses_balle_blanche(end+1,:) = [vi(1) vi(2) vi(3)];
+      n = rr-rj/norm(rr-rj);
+      p = rr + n*R;
+      [vrf vjf wrf wjf] = calculer_vitesse_apres_coll (rr, rj, p, n, qr0, qj0, epsilon_b2b, true);
+      roulement_j = false;
+      roulement_r = false;
+
+      qr0 = [wrf(1) wrf(2) wrf(3) vrf(1) vrf(2) vrf(3) rr(1) rr(2) rr(3)];
+      qj0 = [wjf(1) wjf(2) wjf(3) vjf(1) vjf(2) vjf(3) rj(1) rj(2) rj(3)];
     endif
     
     if b_mur_collision
-      fprintf("b_mur_collision\n");
-      n = calculer_normale(ri, ri_j);
-      p = ri + n*R;
-      [vbf, wbf]  = calculer_vitesse_apres_coll_mur (ri, p, n, vi, wi, epsilon_b2mur);
+      %fprintf("b_mur_collision\n");
       
-      vi = [vbf(1); vbf(2); 0];
-      wi = [wbf(1); wbf(2); wbf(3)];
+      if pos_mur_b == 0
+        qm = [ 0 0 0 0 0 0 qs(7)-2*R qs(8) R];
+            
+      elseif pos_mur_b == 1
+        qm = [ 0 0 0 0 0 0 qs(7)+2*R qs(8) R];
+        
+      elseif pos_mur_b == 2
+       qm = [ 0 0 0 0 0 0 qs(7) qs(8)-2*R R];
+      elseif pos_mur_b == 3 
+        qm = [ 0 0 0 0 0 0 qs(7) qs(8)+2*R R];
+      endif
       
-      xb(end+1,:) = next_pos(xb(end), vi(1), delta_t);
-      yb(end+1,:) = next_pos(yb(end), vi(2), delta_t);
-      ri = [xb(end); yb(end); 0];
-      q0 = [wi(1); wi(2); wi(3); vi(1); vi(2); vi(3); ri(1); ri(2); ri(3)];
-      vitesses_balle_blanche(end+1,:) = [vi(1) vi(2) vi(3)];
+      rm = [ qm(7) qm(8) qm(9)];
+      n = rb-rm/norm(rb-rm);
+      p = rb + n*R;
+      [vbf vmf wbf wmf] = calculer_vitesse_apres_coll (rb, rm, p, n, q0, qm, epsilon_b2mur, false);
+      roulement_b = false;
+
+      q0 = [wbf(1) wbf(2) wbf(3) vbf(1) vbf(2) vbf(3) rb(1) rb(2) rb(3)];
+    endif
+    
+    if r_mur_collision
+      %fprintf("r_mur_collision\n");
+      
+      if pos_mur_r == 0
+        qm = [ 0 0 0 0 0 0 qsr(7)-2*R qsr(8) R];
+            
+      elseif pos_mur_r == 1
+        qm = [ 0 0 0 0 0 0 qsr(7)+2*R qsr(8) R];
+        
+      elseif pos_mur_r == 2
+       qm = [ 0 0 0 0 0 0 qsr(7) qsr(8)-2*R R];
+      elseif pos_mur_r == 3 
+        qm = [ 0 0 0 0 0 0 qsr(7) qsr(8)+2*R R];
+      endif
+      
+      
+      rm = [ qm(7) qm(8) qm(9)];
+      n = rr-rm/norm(rr-rm);
+      p = rr + n*R;
+      [vrf vmf wrf wmf] = calculer_vitesse_apres_coll (rr, rm, p, n, qr0, qm, epsilon_b2mur, false);
+      roulement_r = false;
+
+      qr0 = [wrf(1) wrf(2) wrf(3) vrf(1) vrf(2) vrf(3) rr(1) rr(2) rr(3)];
+    endif
+    
+    if j_mur_collision
+      %fprintf("j_mur_collision\n");
+      
+      if pos_mur_j == 0
+        qm = [ 0 0 0 0 0 0 qsj(7)-2*R qsj(8) R];
+            
+      elseif pos_mur_j == 1
+        qm = [ 0 0 0 0 0 0 qsj(7)+2*R qsj(8) R];
+        
+      elseif pos_mur_j == 2
+       qm = [ 0 0 0 0 0 0 qsj(7) qsj(8)-2*R R];
+      elseif pos_mur_j == 3 
+        qm = [ 0 0 0 0 0 0 qsj(7) qsj(8)+2*R R];
+      endif
+      
+      rm = [ qm(7) qm(8) qm(9)];
+      n = rj-rm/norm(rj-rm);
+      p = rj + n*R;
+      [vjf vmf wjf wmf] = calculer_vitesse_apres_coll (rj, rm, p, n, qj0, qm, epsilon_b2mur, false);
+      roulement_j = false;
+
+      qj0 = [wjf(1) wjf(2) wjf(3) vjf(1) vjf(2) vjf(3) rj(1) rj(2) rj(3)];
+    endif
+      
+    if roulement_b == false
+      roulement_temp = roulement_b;
+      qs = SEDRK4t0 (q0, t0, delta_t, 'g');
+            
+      roulement_b = qs_glissement (q0, qs);
+      
+      xb(end+1,:) = next_pos(xb(end), qs(4), delta_t);
+      yb(end+1,:) = next_pos(yb(end), qs(5), delta_t);
+      vbx(end+1,:) = qs(4);
+      vby(end+1,:) = qs(5);
+      
+      q0 = qs;
+      
+      if roulement_b != roulement_temp
+        tr(end+1,:) = [t0];
+      endif
       
       tt(end+1,:) = [t0];
       t0 = t0 + delta_t;
+    else
+      [qs,arret_balle_b] = qs_roulement (q0, delta_t, R);
+      
+      q0 = qs;
+
+      xb(end+1,:) = next_pos(xb(end), qs(4), delta_t);
+      yb(end+1,:) = next_pos(yb(end), qs(5), delta_t);
+      
+      tt(end+1,:) = [t0];
+      t0 = t0 + delta_t;
+      
+      if arret_balle_b == true
+        break;
+      endif
+      
+    endif  
+    
+    if roulement_r == false
+
+      qsr = SEDRK4t0 (qr0, t0, delta_t, 'g');
+            
+      roulement_r = qs_glissement (qr0, qsr);
+      
+      xr(end+1,:) = next_pos(xb(end), qs(4), delta_t);
+      yr(end+1,:) = next_pos(yb(end), qs(5), delta_t);
+      
+      qr0 = qsr;
+
+    else
+      [qsr,is_roulement_r_end] = qs_roulement (qr0, delta_t, R);
+      
+      qr0 = qsr;
+
+      xr(end+1,:) = next_pos(xr(end), qsr(4), delta_t);
+      yr(end+1,:) = next_pos(yr(end), qsr(5), delta_t);
+
+      if is_roulement_r_end == true
+        roulement_r = false;
+        qr0 = [ 0 0 0 0 0 0 qr0(7) qr0(8) qr0(9)];
+      endif
+      
     endif
-  
-    delta_t = delta_t / 2;
     
-    if glisse_b != prev_glisse_b
-      tr(end+1,:) = [t0];
+    if roulement_j == false
+
+      qsj = SEDRK4t0 (qj0, t0, delta_t, 'g');
+            
+      roulement_j = qs_glissement (qj0, qsj);
+      
+      xj(end+1,:) = next_pos(xj(end), qsj(4), delta_t);
+      yj(end+1,:) = next_pos(yj(end), qsj(5), delta_t);
+      
+      qj0 = qsj;
+
+    else
+      [qsj,is_roulement_j_end] = qs_roulement (qj0, delta_t, R);
+      
+      qj0 = qsj;
+
+      xj(end+1,:) = next_pos(xj(end), qsj(4), delta_t);
+      yj(end+1,:) = next_pos(yj(end), qsj(5), delta_t);
+
+      if is_roulement_r_end == true
+        roulement_r = false;
+        qr0 = [ 0 0 0 0 0 0 qj0(7) qj0(8) qj0(9)];
+      endif
+      
     endif
     
-    arret_balle = dot([q0(4) q0(5) q0(6)], [qs(4) qs(5) qs(6)]);
-    
-    
-    prev_glisse_b = glisse_b;
-    fprintf("arret_balle = %d\n", arret_balle);
-    fprintf("vf = [ %d %d %d]\n", qs(4),qs(5),qs(6));
-  until arret_balle_b;
-  
+    if collision_avec_rouge
+        coll = coll + 1;
+    end
+    if collision_avec_jaune
+        coll = coll + 1;
+    end
+%{
+  fprintf("vf = [ %d %d %d]\n", qs(4),qs(5),qs(6));
+  fprintf("rf = [ %d %d %d]\n", qs(7),qs(8),qs(9));
+
+  fprintf("-----------------------------------------------------------------\n");
+    %}
+  until m == 10000
   
 endfunction
-
-
-
